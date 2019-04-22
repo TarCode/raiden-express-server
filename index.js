@@ -6,11 +6,12 @@ const app = express()
 const port = 3001
 
 app.use(cors())
+
 app.get('/', (req, res) => res.send('Hello World!'))
 
 app.get('/address', async (req, res) => {
     try {
-        const response  = await fetch(process.env.RAIDEN_API_URL + '/api/v1/address')
+        const response  = await fetch(process.env.RAIDEN_CLIENT_URL + '/api/v1/address')
         const json = await response.json();
         res.send(json)
     } catch(err) {
@@ -20,7 +21,7 @@ app.get('/address', async (req, res) => {
 
 app.get('/channels', async (req, res) => {
     try {
-        const response  = await fetch(process.env.RAIDEN_API_URL + '/api/v1/channels')
+        const response  = await fetch(process.env.RAIDEN_CLIENT_URL + '/api/v1/channels')
         const json = await response.json();
         res.send(json)
     } catch(err) {
