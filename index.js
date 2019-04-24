@@ -23,6 +23,7 @@ app.get('/address', async (req, res) => {
     }
 })
 
+// GET all tokens
 app.get('/tokens', async (req, res) => {
     try {
         const response  = await fetch(process.env.RAIDEN_CLIENT_URL + '/api/v1/tokens')
@@ -33,6 +34,23 @@ app.get('/tokens', async (req, res) => {
     }
 })
 
+// POST token: Register new token
+app.post('/tokens', async (req, res) => {
+    const {token_address} = req.body;
+    console.log("THIS IS TOKEN ADDR", token_address);
+    
+    try {
+        const response  = await fetch(process.env.RAIDEN_CLIENT_URL + '/api/v1/tokens/'+ token_address, {
+            method: 'PUT'
+        })
+        const json = await response.json();
+        res.send(json)
+    } catch(err) {
+        res.status(400).send({err});
+    }
+})
+
+// GET all channels
 app.get('/channels', async (req, res) => {
     try {
         const response  = await fetch(process.env.RAIDEN_CLIENT_URL + '/api/v1/channels')
