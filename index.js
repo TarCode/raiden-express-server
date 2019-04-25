@@ -84,6 +84,29 @@ app.post('/channels', async (req, res) => {
     }
 })
 
+// POST channels/close: Closes a new channel
+app.post('/close-channel', async (req, res) => {
+    const {token_address, partner_address} = req.body;
+    
+    try {
+        const response  = await fetch(process.env.RAIDEN_CLIENT_URL + '/api/v1/channels/' + token_address + '/' + partner_address, {
+            method: 'PATCH',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                "state": "closed"
+            })
+        })
+        console.log("RESULT FROM CLOSE CHANNEL", response);
+        const json = await response.json();
+        
+        res.send(json)
+    } catch(err) {
+        res.status(400).send({err});
+    }
+})
+
 // Create new payment
 app.post('/payments', async (req, res) => {
     const {identifier, amount, token_address, target_address} = req.body;
@@ -100,6 +123,7 @@ app.post('/payments', async (req, res) => {
             })
         })
         const json = await response.json();
+        
         res.send(json)
     } catch(err) {
         res.status(400).send({err});
@@ -111,6 +135,53 @@ app.get('/payments', async (req, res) => {
     const { token_address, target_address } = req.body;
     try {
         const response  = await fetch(process.env.RAIDEN_CLIENT_URL + '/api/v1/payments/' + token_address + '/' + target_address)
+        const json = await response.json();
+        res.send(json)
+    } catch(err) {
+        res.status(400).send({err});
+    }
+})
+
+// GET connections
+app.get('/connections', async (req, res) => {
+    try {
+        const response  = await fetch(process.env.RAIDEN_CLIENT_URL + '/api/v1/connections')
+        const json = await response.json();
+        res.send(json)
+    } catch(err) {
+        res.status(400).send({err});
+    }
+})
+
+// Create new connection
+app.post('/connections', async (req, res) => {
+    const {token_address, funds} = req.body;
+    
+    try {
+        const response  = await fetch(process.env.RAIDEN_CLIENT_URL + '/api/v1/connections/' + token_address, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                "funds": parseInt(funds)
+            })
+        })
+        const json = await response.json();
+        res.send(json)
+    } catch(err) {
+        res.status(400).send({err});
+    }
+})
+
+// DELETE connection
+app.post('/delete-connection', async (req, res) => {
+    const {token_address, funds} = req.body;
+    
+    try {
+        const response  = await fetch(process.env.RAIDEN_CLIENT_URL + '/api/v1/connections/' + token_address, {
+            method: 'DELETE'
+        })
         const json = await response.json();
         res.send(json)
     } catch(err) {
