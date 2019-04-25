@@ -37,7 +37,6 @@ app.get('/tokens', async (req, res) => {
 // POST token: Register new token
 app.post('/tokens', async (req, res) => {
     const {token_address} = req.body;
-    console.log("THIS IS TOKEN ADDR", token_address);
     
     try {
         const response  = await fetch(process.env.RAIDEN_CLIENT_URL + '/api/v1/tokens/'+ token_address, {
@@ -54,6 +53,64 @@ app.post('/tokens', async (req, res) => {
 app.get('/channels', async (req, res) => {
     try {
         const response  = await fetch(process.env.RAIDEN_CLIENT_URL + '/api/v1/channels')
+        const json = await response.json();
+        res.send(json)
+    } catch(err) {
+        res.status(400).send({err});
+    }
+})
+
+// POST channel: Creates a new channel
+app.post('/channels', async (req, res) => {
+    const {token_address} = req.body;
+    
+    try {
+        const response  = await fetch(process.env.RAIDEN_CLIENT_URL + '/api/v1/channels', {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                "partner_address": "0x0763d61743Bcf83Cce1231D2Df9F8642EF114B82",
+                "token_address": "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
+                "total_deposit": 35000000,
+                "settle_timeout": 500
+            })
+        })
+        const json = await response.json();
+        res.send(json)
+    } catch(err) {
+        res.status(400).send({err});
+    }
+})
+
+// Create new payment
+app.post('/payments', async (req, res) => {
+    const {identifier, amount, token_address, target_address} = req.body;
+    
+    try {
+        const response  = await fetch(process.env.RAIDEN_CLIENT_URL + '/api/v1/payments/' + token_address + '/' + target_address, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                amount,
+                identifier
+            })
+        })
+        const json = await response.json();
+        res.send(json)
+    } catch(err) {
+        res.status(400).send({err});
+    }
+})
+
+// GET payment events
+app.get('/payments', async (req, res) => {
+    const { token_address, target_address } = req.body;
+    try {
+        const response  = await fetch(process.env.RAIDEN_CLIENT_URL + '/api/v1/payments/' + token_address + '/' + target_address)
         const json = await response.json();
         res.send(json)
     } catch(err) {
